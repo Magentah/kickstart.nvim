@@ -32,10 +32,21 @@ return {
       c = { 'clang_format' },
       cpp = { 'clang_format' },
       cmake = { 'cmake_format' },
+      cs = { 'csharpier' },
+      javascript = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+      typescript = { 'biome', 'prettierd', 'prettier', stop_after_first = true },
+      rust = { 'rustfmt' },
+      protobuf = { 'buf' },
+      latex = { 'texfmt' },
+      python = { 'black' },
     },
     formatters = {
       cmake_format = {
         args = { '-', '--config-files', vim.fn.stdpath 'config' .. '/plugin-config/cmake-format.yaml' },
+      },
+      csharpier = {
+        command = 'dotnet-csharpier',
+        args = { '--write-stdout' },
       },
     },
   },

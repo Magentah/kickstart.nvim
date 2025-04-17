@@ -28,7 +28,7 @@ return {
         end,
       },
       completion = { completeopt = 'menu,menuone,noinsert' },
-      mappings = cmp.mapping.preset.insert {
+      mapping = cmp.mapping.preset.insert {
         ['<C-n>'] = cmp.mapping.select_next_item(),
         ['<C-p>'] = cmp.mapping.select_prev_item(),
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),

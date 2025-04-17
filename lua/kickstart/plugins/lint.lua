@@ -7,6 +7,16 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
+        typescript = { 'biomejs' },
+        javascript = { 'biomejs' },
+        json = { 'biomejs' },
+        protobuf = { 'buf' },
+        dockerfile = { 'hadolint' },
+        python = { 'pylint' },
+        yaml = { 'yamllint' },
+        css = { 'stylelint' },
+        scss = { 'stylelint' },
+        html = { 'markuplint' },
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,

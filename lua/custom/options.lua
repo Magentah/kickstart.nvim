@@ -72,3 +72,12 @@ vim.opt.expandtab = true
 vim.opt.colorcolumn = '140'
 
 vim.opt.guicursor = 'n-v-c-i:block-Cursor-blinkwait175-blinkoff150-blinkon175'
+
+vim.filetype.add {
+  filename = {
+    ['docker-compose.yml'] = 'yaml.docker-compose',
+    ['docker-compose.yaml'] = 'yaml.docker-compose',
+    ['compose.yml'] = 'yaml.docker-compose',
+    ['compose.yaml'] = 'yaml.docker-compose',
+  },
+}
