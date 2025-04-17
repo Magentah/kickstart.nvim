@@ -3,7 +3,7 @@ return {
   event = 'InsertEnter',
   dependencies = {
     {
-      'L3M0N4D3/LuaSnip',
+      'L3MON4D3/LuaSnip',
       build = (function()
         if vim.fn.has 'win32' or vim.fn.executable 'make' == 0 then
           return
