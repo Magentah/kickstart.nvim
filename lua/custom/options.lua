@@ -73,6 +73,9 @@ vim.opt.colorcolumn = '140'
 
 vim.opt.guicursor = 'n-v-c-i:block-Cursor-blinkwait175-blinkoff150-blinkon175'
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugins = 1
+
 vim.filetype.add {
   filename = {
     ['docker-compose.yml'] = 'yaml.docker-compose',

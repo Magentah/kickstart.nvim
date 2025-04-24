@@ -109,12 +109,25 @@ return {
         cmake = {
           filetypes = { 'cmake', 'CMakeLists.txt' },
         },
+        dprint = {},
         lua_ls = {
           settings = {
             Lua = {
               completion = {
                 callSnipper = 'Replace',
               },
+            },
+          },
+        },
+        vtsls = {
+          settings = {
+            inlayHints = {
+              parameterNames = { enabled = 'literals' },
+              parameterTypes = { enabled = true },
+              variableTypes = { enabled = true },
+              propertyDeclarationTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+              enumMemberValues = { enabled = true },
             },
           },
         },
@@ -133,9 +146,12 @@ return {
               desc = 'Go to Definition',
             },
           },
-          enable_roslyn_analyzers = true,
-          organize_imports_on_format = true,
-          enable_import_completion = true,
+          settings = {
+            RoslynExtensionOptions = {
+              EnableAnalyzersSupport = true,
+              EnableImportCompletion = true,
+            },
+          },
         },
       }
 
@@ -144,7 +160,7 @@ return {
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        ensure_installed = {},
+        ensure_installed = ensure_installed,
         automatic_installed = true,
         handlers = {
           function(server_name)

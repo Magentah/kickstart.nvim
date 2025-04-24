@@ -19,6 +19,7 @@ return {
   config = function()
     local cmp = require 'cmp'
     local luasnip = require 'luasnip'
+    local types = require 'cmp.types'
     luasnip.config.setup {}
 
     cmp.setup {
@@ -27,7 +28,11 @@ return {
           luasnip.lsp_expand(args.body)
         end,
       },
-      completion = { completeopt = 'menu,menuone,noinsert' },
+      window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+      },
+      completion = { completeopt = 'menu,menuone,noinsert', autocomplete = { types.cmp.TriggerEvent.TextChanged } },
       mapping = cmp.mapping.preset.insert {
         ['<C-n>'] = cmp.mapping.select_next_item(),
         ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -50,6 +55,7 @@ return {
       },
       sources = {
         { name = 'lazydev', group_index = 0 },
+        { name = 'nvim_lsp_signature_help' },
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'path' },

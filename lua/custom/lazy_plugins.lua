@@ -31,7 +31,30 @@ require('lazy').setup({
     opts = {
       flavour = 'macchiato',
       transparent_background = vim.g.transparent_enabled,
+      integrations = {
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        treesitter = true,
+      },
+      custom_highlights = function(colors)
+        return {
+          GitSignsCurrentLineBlame = { fg = colors.maroon },
+        }
+      end,
     },
+  },
+
+  {
+    'xiyaowong/nvim-transparent',
+    config = function()
+      require('transparent').setup {
+        enable = true,
+        extra_groups = {
+          'NvimTreeNormal',
+        },
+      }
+    end,
   },
 
   -- Highlight todo, notes, etc in comments
@@ -65,10 +88,10 @@ require('lazy').setup({
         },
       }
 
-      require('mini.files').setup()
-      vim.keymap.set('n', '¥', function()
-        MiniFiles.open()
-      end, { desc = 'Mini file' })
+      -- require('mini.files').setup()
+      -- vim.keymap.set('n', '¥', function()
+      --   MiniFiles.open()
+      -- end, { desc = 'Mini file' })
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
