@@ -47,8 +47,8 @@ return {
         args = { '-', '--config-files', vim.fn.stdpath 'config' .. '/plugin-config/cmake-format.yaml' },
       },
       csharpier = {
-        command = 'dotnet',
-        args = { 'csharpier', '--write-stdout' },
+        command = 'csharpier',
+        args = { 'format', '--write-stdout' },
         stdin = true,
       },
     },

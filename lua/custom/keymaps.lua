@@ -1,12 +1,19 @@
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+--
+
+local function map(keys, func, description, opts, mode)
+  mode = mode or 'n'
+  opts = vim.tbl_extend("keep", opts or {}, { desc = description })
+  vim.keymap.set(mode, keys, func, opts)
+end
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+map('<Esc', '<CMD>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+map('<leader>q', vim.diagnostic.setloclist, 'Open Diagnostic [Q]uickfix List')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -14,7 +21,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+map('<Esc><Esc>', '<C-\\><C-n>', 'Exit Terminal Mode', {}, 't')
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -26,9 +33,9 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+map('<C-h>', '<C-w><C-h>', 'Move focus to the left window')
+map('<C-l>', '<C-w><C-l>', 'Move focus to the right window')
+map('<C-j>', '<C-w><C-j>', 'Move focus to the lower window')
+map('<C-k>', '<C-w><C-k>', 'Move focus to the upper window')
 
-vim.keymap.set('n', '¥', ':NvimTreeToggle<CR>', { desc = 'Toggle NvimTree' })
+map('¥', ':NvimTreeToggle<CR>', 'Toggle NvimTree')

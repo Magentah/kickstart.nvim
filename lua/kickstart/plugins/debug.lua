@@ -94,7 +94,9 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        'codelldb',
+        'netcoredbg',
+        'chrome-debug-adapter',
       },
     }
 
@@ -136,12 +138,58 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
+    dap.adapters.codelldb = {
+      type = 'executable',
+      command = 'corelldb',
+    }
+
+    dap.configurations.cpp = {
+      {
+        name = 'Launch File',
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+      },
+    }
+    dap.configurations.rust = dap.configurations.cpp
+    dap.configurations.c = dap.configurations.cpp
+
+    dap.adapters.coreclr = {
+      type = 'executable',
+      command = 'netcoredbg',
+      args = { '--interpreter=vscode' },
+    }
+    dap.configurations.cs = {
+      {
+        type = 'coreclr',
+        name = 'Launch - netcoredbg',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to dll', vim.fn.getcwd() .. '/bin/Debug/', file)
+        end,
+      },
+    }
+
+    dap.adapters.chrome = {
+      type = 'executable',
+      command = 'node',
+      args = { 'chromeDebug.js' },
+    }
+
+    dap.configurations.typescriptreact = {
+      {
+        type = 'chrome',
+        request = 'attach',
+        program = '${file}',
+        cwd = vim.fn.getcwd(),
+        sourceMaps = true,
+        protocol = 'inspector',
+        port = 9222,
+        webRoot = '${workspaceFolder}',
       },
     }
   end,

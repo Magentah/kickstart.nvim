@@ -7,9 +7,9 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
-        typescript = { 'eslint' },
-        javascript = { 'eslint' },
-        json = { 'eslint' },
+        typescript = { 'eslint_d' },
+        javascript = { 'eslint_d' },
+        json = { 'eslint_d' },
         protobuf = { 'buf' },
         dockerfile = { 'hadolint' },
         python = { 'pylint' },
@@ -17,6 +17,12 @@ return {
         css = { 'stylelint' },
         scss = { 'stylelint' },
         html = { 'markuplint' },
+        c = { 'clangtidy' },
+        cpp = { 'clangtidy' },
+        cmake = { 'cmakelint' },
+        lua = { 'selene' },
+        proto = { 'protolint' },
+        terraform = { 'tflint' },
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,

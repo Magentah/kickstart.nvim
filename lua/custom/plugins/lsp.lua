@@ -16,6 +16,7 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       { 'j-hui/fidget.nvim', opts = {} },
       'hrsh7th/cmp-nvim-lsp',
+      'Hoffs/omnisharp-extended-lsp.nvim',
     },
     config = function()
       vim.api.nvim_create_autocmd('LspAttach', {
@@ -36,8 +37,17 @@ return {
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ctions', { 'n', 'x' })
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
+          local function client_supports_method(client, method, bufnr)
+            if vim.fn.has 'nvim-0.11' == 1 then
+              return client:supports_method(method, bufnr)
+            else
+              return client.supports_method(method, { bufnr = bufnr })
+            end
+          end
+
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+
+          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_group = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -51,18 +61,18 @@ return {
               callback = vim.lsp.buf.clear_references,
             })
 
-            vim.api.nvim_create_autocmd('LspDetach', {
-              group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-              callback = function(event2)
-                vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmd { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-              end,
-            })
+            -- vim.api.nvim_create_autocmd('LspDetach', {
+            --   group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
+            --   callback = function(event2)
+            --     vim.lsp.buf.clear_references()
+            --     vim.api.nvim_clear_autocmd { group = 'kickstart-lsp-highlight', buffer = event2.buf }
+            --   end,
+            -- })
           end
 
           map('<leader>ch', '<CMD>ClangdSwitchSourceHeader<CR>', '[C]hange Source/[H]eader')
 
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -84,8 +94,8 @@ return {
               'meson.build',
               'meson_options.txt',
               'build.ninja'
-            )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or require('lspconfig.util').find_git_ancestor(
-              fname
+            )(fname) or require('lspconfig.util').root_pattern('compile_commands.json', 'compile_flags.txt')(fname) or vim.fs.dirname(
+              vim.fs.find('.git', { path = fname, upward = true })[1]
             )
           end,
           capabilities = {
@@ -120,14 +130,37 @@ return {
           },
         },
         vtsls = {
+          filetypes = {
+            'javascript',
+            'javascriptreact',
+            'javascript.jsx',
+            'typescript',
+            'typescriptreact',
+            'typescript.tsx',
+          },
           settings = {
-            inlayHints = {
-              parameterNames = { enabled = 'literals' },
-              parameterTypes = { enabled = true },
-              variableTypes = { enabled = true },
-              propertyDeclarationTypes = { enabled = true },
-              functionLikeReturnTypes = { enabled = true },
-              enumMemberValues = { enabled = true },
+            complete_function_calls = true,
+            vtsls = {
+              enableMoveToFileCodeAction = true,
+              autoUseWorkspaceTsdk = true,
+              experimental = {
+                maxInlayHintLength = 30,
+                completion = {
+                  enableServerSizeFuzzyMatch = true,
+                },
+              },
+            },
+            typescript = {
+              updateImportsOnFileMove = { enabled = 'always' },
+              suggest = { completeFunctionCalls = true },
+              inlayHints = {
+                parameterNames = { enabled = 'literals' },
+                parameterTypes = { enabled = true },
+                variableTypes = { enabled = true },
+                propertyDeclarationTypes = { enabled = true },
+                functionLikeReturnTypes = { enabled = true },
+                enumMemberValues = { enabled = true },
+              },
             },
           },
         },
@@ -137,6 +170,11 @@ return {
               return require('omnisharp_extended').handler(...)
             end,
           },
+          root_dir = function(fname)
+            local primary = require('lspconfig.util').root_pattern '*.sln'(fname)
+            local fallback = require('lspconfig.util').root_pattern '*.csproj'(fname)
+            return primary or fallback
+          end,
           keys = {
             {
               'gd',
@@ -145,14 +183,26 @@ return {
               end,
               desc = 'Go to Definition',
             },
-          },
-          settings = {
-            RoslynExtensionOptions = {
-              EnableAnalyzersSupport = true,
-              EnableImportCompletion = true,
+            {
+              'gr',
+              function()
+                require('omnisharp_extended').telescope_lsp_references()
+              end,
+              desc = 'Go to References',
+            },
+            {
+              'gi',
+              function()
+                require('omnisharp_extended').telescope_lsp_implementation()
+              end,
+              desc = 'Go to implementation',
             },
           },
+          enable_roslyn_analyzers = true,
+          organize_imports_on_format = true,
+          enable_import_completion = true,
         },
+        rust_analyzer = {},
       }
 
       local ensure_installed = vim.tbl_keys(servers or {})
@@ -161,7 +211,7 @@ return {
 
       require('mason-lspconfig').setup {
         ensure_installed = ensure_installed,
-        automatic_installed = true,
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
